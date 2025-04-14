@@ -23,6 +23,13 @@ export class MoviesRepository {
     });
   }
 
+  async existsByEpisodeId(episodeId: number): Promise<boolean> {
+    const movie = await this.prisma.movie.findFirst({
+      where: { episodeId, deletedAt: null },
+    });
+    return !!movie;
+  }
+
   async create(data: Prisma.MovieCreateInput): Promise<Movie> {
     return this.prisma.movie.create({ data });
   }
