@@ -14,15 +14,6 @@ export class MoviesRepository {
     });
   }
 
-  async findByTitle(title: string): Promise<Movie | null> {
-    return this.prisma.movie.findFirst({
-      where: {
-        title,
-        deletedAt: null,
-      },
-    });
-  }
-
   async findOne(id: string): Promise<Movie | null> {
     return this.prisma.movie.findFirst({
       where: {
@@ -43,7 +34,7 @@ export class MoviesRepository {
     });
   }
 
-  async remove(id: string): Promise<Movie> {
+  async softDelete(id: string): Promise<Movie> {
     return this.prisma.movie.update({
       where: { id },
       data: {
