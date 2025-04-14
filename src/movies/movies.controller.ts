@@ -7,6 +7,7 @@ import {
   Delete,
   Patch,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { CreateMovieDto } from './dto/create-movie.dto';
@@ -23,6 +24,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { ADMIN, USER } from 'src/common/constants';
 import { SyncResultDto } from './dto/sync-result.dto';
+import { AuthenticatedRequest } from 'src/auth/interfaces/authenticated-user.interface';
 
 @ApiTags('Movies')
 @Controller('movies')
@@ -40,8 +42,11 @@ export class MoviesController {
     type: MovieDto,
   })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
-  async create(@Body() createMovieDto: CreateMovieDto): Promise<MovieDto> {
-    return this.moviesService.create(createMovieDto);
+  async create(
+    @Body() createMovieDto: CreateMovieDto,
+    @Req() req: AuthenticatedRequest,
+  ): Promise<MovieDto> {
+    return this.moviesService.create(createMovieDto, req.user);
   }
 
   @Get()
