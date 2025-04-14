@@ -42,7 +42,6 @@ model Movie {
   characters     String[]
   planets        String[]  
   url            String
-  origin         Origin     @default(LOCAL)
   createdById    String?    
   createdBy      User?      @relation("CreatedMovies", fields: [createdById], references: [id])
   deletedAt      DateTime?
@@ -53,9 +52,4 @@ model Movie {
 enum Role {
   USER
   ADMIN
-}
-
-enum Origin {
-  LOCAL
-  SWAPI
 }
