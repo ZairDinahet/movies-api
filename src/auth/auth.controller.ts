@@ -28,11 +28,11 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post('login')
   @HttpCode(200)
-  @ApiOperation({ summary: 'User login' })
+  @ApiOperation({ summary: 'User login (PUBLIC)' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 409, description: 'Invalid credentials' })
+  @Post('login')
   async login(
     @Body() loginInfo: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -50,11 +50,11 @@ export class AuthController {
     return { accessToken: tokens.accessToken };
   }
 
-  @Post('logout')
   @HttpCode(200)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
+  @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
     res.clearCookie('refreshToken', {
       httpOnly: true,
@@ -66,26 +66,26 @@ export class AuthController {
   }
 
   @Public()
-  @Post('register')
   @HttpCode(201)
-  @ApiOperation({ summary: 'Register new user' })
+  @ApiOperation({ summary: 'Register new user (PUBLIC)' })
   @ApiResponse({
     status: 201,
     description: 'User registered successfully',
     type: UserDto,
   })
   @ApiResponse({ status: 409, description: 'Email already exists' })
+  @Post('register')
   async register(@Body() registerInfo: RegisterDto) {
     return this.authService.register(registerInfo);
   }
 
   @Public()
-  @Post('refresh')
   @HttpCode(200)
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
   @UseGuards(RefreshTokenGuard)
+  @Post('refresh')
   async refreshToken(@Req() req: AuthenticatedRequest) {
     const token = await this.authService.refreshTokens(req.user);
     return { accessToken: token };
