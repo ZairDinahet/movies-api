@@ -55,6 +55,7 @@ export class AuthService {
     const hashedPassword = await hashPassword(password);
     const createdUser = await this.usersService.create({
       password: hashedPassword,
+      role: 'USER',
       ...rest,
     });
 
