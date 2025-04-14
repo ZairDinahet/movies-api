@@ -2,7 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from './core/errors/all-exception.filter'; // Asegurate de que esta ruta sea la correcta
+import { AllExceptionsFilter } from './core/errors/all-exception.filter';
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
