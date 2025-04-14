@@ -1,14 +1,24 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { ClassSerializerInterceptor } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { AllExceptionsFilter } from './core/errors/all-exception.filter'; // Asegurate de que esta ruta sea la correcta
 import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
+
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const config = new DocumentBuilder()
     .setTitle('Star Wars Movie API')
@@ -23,16 +33,9 @@ async function bootstrap() {
       description: 'Enter JWT token',
     })
     .build();
+
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, documentFactory);
-
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-    }),
-  );
-
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   await app.listen(process.env.PORT ?? 3000);
 }
