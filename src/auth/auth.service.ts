@@ -62,7 +62,7 @@ export class AuthService {
     });
   }
 
-  async refreshTokens(user: User) {
+  async refreshTokens(user: JwtPayload) {
     const newAccessToken: string = await this.generateAccessToken({
       id: user.id,
       email: user.email,
