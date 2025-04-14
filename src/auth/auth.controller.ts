@@ -1,19 +1,33 @@
-import { Controller, Post, Body, HttpCode, Res } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  Res,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Response, Request } from 'express';
 import { UserDto } from 'src/users/dto/user.dto';
 import { LoginDto } from './dto/login.dto';
-import { User } from '@prisma/client';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { AuthenticatedRequest } from './interfaces/authenticated-user.interface';
+import { Public } from 'src/common/decorators/public.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('login')
   @HttpCode(200)
+  @ApiOperation({ summary: 'User login' })
+  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({ status: 409, description: 'Invalid credentials' })
   async login(
     @Body() loginInfo: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -45,6 +59,7 @@ export class AuthController {
     return { message: 'Logout successful' };
   }
 
+  @Public()
   @Post('register')
   @HttpCode(201)
   @ApiOperation({ summary: 'Register new user' })
@@ -58,14 +73,15 @@ export class AuthController {
     return this.authService.register(registerInfo);
   }
 
+  @Public()
   @Post('refresh')
   @HttpCode(200)
   @ApiOperation({ summary: 'Refresh access token' })
   @ApiResponse({ status: 200, description: 'Token refreshed' })
   @ApiResponse({ status: 401, description: 'Invalid refresh token' })
-  async refreshToken(user: User) {
-    const token = await this.authService.refreshTokens(user);
-
+  @UseGuards(RefreshTokenGuard)
+  async refreshToken(@Req() req: AuthenticatedRequest) {
+    const token = await this.authService.refreshTokens(req.user);
     return { accessToken: token };
   }
 }
