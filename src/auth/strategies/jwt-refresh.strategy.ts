@@ -32,7 +32,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
     });
   }
 
-  validate(payload: JwtPayload) {
+  validate(req: Request, payload: JwtPayload) {
     return {
       id: payload.id,
       email: payload.email,
