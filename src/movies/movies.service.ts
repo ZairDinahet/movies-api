@@ -12,6 +12,7 @@ import { plainToInstance } from 'class-transformer';
 import { SyncResultDto } from './dto/sync-result.dto';
 import { SwapiFilmsResponse } from './interfaces/swapi-film.interface';
 import https from 'https';
+import { JwtPayload } from 'src/auth/interfaces/jwt-payload.interface';
 
 const agent = new https.Agent({
   rejectUnauthorized: false, // ¡No usar en producción!
@@ -34,8 +35,11 @@ export class MoviesService {
     return plainToInstance(MovieDto, movie);
   }
 
-  async create(createMovieDto: CreateMovieDto): Promise<MovieDto> {
-    const movie = await this.moviesRepository.create(createMovieDto);
+  async create(
+    createMovieDto: CreateMovieDto,
+    user: JwtPayload,
+  ): Promise<MovieDto> {
+    const movie = await this.moviesRepository.create(createMovieDto, user.id);
     return plainToInstance(MovieDto, movie);
   }
 
@@ -63,7 +67,6 @@ export class MoviesService {
             producer: swapiMovie.producer,
             releaseDate: new Date(swapiMovie.release_date),
             url: swapiMovie.url,
-            origin: 'SWAPI',
             species: swapiMovie.species,
             starships: swapiMovie.starships,
             vehicles: swapiMovie.vehicles,

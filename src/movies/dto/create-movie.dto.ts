@@ -1,12 +1,5 @@
 import { Type } from 'class-transformer';
-import {
-  IsString,
-  IsArray,
-  IsOptional,
-  IsInt,
-  IsDate,
-  IsUUID,
-} from 'class-validator';
+import { IsString, IsArray, IsOptional, IsInt, IsDate } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateMovieDto {
@@ -63,11 +56,6 @@ export class CreateMovieDto {
   @ApiProperty()
   @IsString()
   url: string;
-
-  @ApiPropertyOptional({ format: 'uuid' })
-  @IsOptional()
-  @IsUUID()
-  createdById?: string;
 
   @ApiPropertyOptional({ type: String, format: 'date-time' })
   @IsOptional()
