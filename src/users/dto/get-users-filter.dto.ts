@@ -1,4 +1,4 @@
-import { IsOptional, IsEnum, IsEmail } from 'class-validator';
+import { IsOptional, IsEmail } from 'class-validator';
 
 export enum UserOrderBy {
   ASC = 'asc',
@@ -9,8 +9,4 @@ export class GetUsersFilterDto {
   @IsOptional()
   @IsEmail()
   email?: string;
-
-  @IsOptional()
-  @IsEnum(UserOrderBy)
-  orderByCreatedAt?: UserOrderBy;
 }
