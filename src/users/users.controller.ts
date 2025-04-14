@@ -35,7 +35,7 @@ import { ADMIN } from 'src/common/constants';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Create a new user' })
+  @ApiOperation({ summary: 'Create a new user (ADMIN only)' })
   @ApiResponse({
     status: 201,
     description: 'User created successfully',
@@ -48,7 +48,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @ApiOperation({ summary: 'Get all users with optional filters' })
+  @ApiOperation({ summary: 'Get all users with optional filters (ADMIN only)' })
   @ApiResponse({ status: 200, description: 'List of users', type: [UserDto] })
   @ApiQuery({
     name: 'email',
@@ -61,7 +61,7 @@ export class UsersController {
     return this.usersService.findAll(filterDto);
   }
 
-  @ApiOperation({ summary: 'Get a user by ID' })
+  @ApiOperation({ summary: 'Get a user by ID (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the user to retrieve' })
   @ApiResponse({ status: 200, description: 'User found', type: UserDto })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -70,7 +70,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @ApiOperation({ summary: 'Update user details by ID' })
+  @ApiOperation({ summary: 'Update user details by ID (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the user to update' })
   @ApiResponse({
     status: 200,
@@ -83,7 +83,7 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
-  @ApiOperation({ summary: 'Soft delete a user by ID' })
+  @ApiOperation({ summary: 'Soft delete a user by ID (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the user to delete' })
   @ApiResponse({ status: 200, description: 'User soft-deleted successfully' })
   @Delete(':id/soft')
@@ -91,7 +91,7 @@ export class UsersController {
     return this.usersService.softDelete(id);
   }
 
-  @ApiOperation({ summary: 'Hard delete a user by ID' })
+  @ApiOperation({ summary: 'Hard delete a user (permanent) (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the user to delete' })
   @ApiResponse({ status: 200, description: 'User hard-deleted successfully' })
   @Delete(':id/hard')

@@ -33,7 +33,7 @@ export class MoviesController {
 
   @Post()
   @Roles(ADMIN)
-  @ApiOperation({ summary: 'Create a new movie' })
+  @ApiOperation({ summary: 'Create a new movie (ADMIN only)' })
   @ApiResponse({
     status: 201,
     description: 'Movie created successfully',
@@ -45,7 +45,7 @@ export class MoviesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all movies' })
+  @ApiOperation({ summary: 'Get all movies (USER and ADMIN)' })
   @ApiResponse({ status: 200, description: 'List of movies', type: [MovieDto] })
   async findAll(): Promise<MovieDto[] | null> {
     return this.moviesService.findAll();
@@ -53,7 +53,9 @@ export class MoviesController {
 
   @Get('sync-swapi')
   @Roles(ADMIN)
-  @ApiOperation({ summary: 'Sync movies from SWAPI (only new ones)' })
+  @ApiOperation({
+    summary: 'Sync movies from SWAPI, only new ones (ADMIN only)',
+  })
   @ApiResponse({
     status: 200,
     description: 'Synchronization complete',
@@ -65,7 +67,7 @@ export class MoviesController {
 
   @Get(':id')
   @Roles(USER)
-  @ApiOperation({ summary: 'Get a movie by ID' })
+  @ApiOperation({ summary: 'Get a movie by ID (USER only)' })
   @ApiParam({ name: 'id', description: 'ID of the movie' })
   @ApiResponse({ status: 200, description: 'Movie found', type: MovieDto })
   @ApiResponse({ status: 404, description: 'Movie with ID not found' })
@@ -75,7 +77,7 @@ export class MoviesController {
 
   @Patch(':id')
   @Roles(ADMIN)
-  @ApiOperation({ summary: 'Update a movie' })
+  @ApiOperation({ summary: 'Update a movie (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the movie to update' })
   @ApiResponse({
     status: 200,
@@ -93,7 +95,7 @@ export class MoviesController {
 
   @Delete(':id/soft')
   @Roles(ADMIN)
-  @ApiOperation({ summary: 'Soft delete a movie' })
+  @ApiOperation({ summary: 'Soft delete a movie (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the movie to soft delete' })
   @ApiResponse({
     status: 200,
@@ -107,7 +109,7 @@ export class MoviesController {
 
   @Delete(':id/hard')
   @Roles(ADMIN)
-  @ApiOperation({ summary: 'Hard delete a movie (permanent)' })
+  @ApiOperation({ summary: 'Hard delete a movie (permanent) (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the movie to hard delete' })
   @ApiResponse({
     status: 200,
