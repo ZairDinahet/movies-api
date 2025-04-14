@@ -56,7 +56,7 @@ export class AuthController {
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('refresh', {
+    res.clearCookie('refreshToken', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
