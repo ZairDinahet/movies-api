@@ -68,7 +68,7 @@ export class MoviesController {
   @ApiOperation({ summary: 'Get a movie by ID' })
   @ApiParam({ name: 'id', description: 'ID of the movie' })
   @ApiResponse({ status: 200, description: 'Movie found', type: MovieDto })
-  @ApiResponse({ status: 404, description: 'Movie not found' })
+  @ApiResponse({ status: 404, description: 'Movie with ID not found' })
   async findOne(@Param('id') id: string): Promise<MovieDto | null> {
     return this.moviesService.findOne(id);
   }
@@ -83,7 +83,7 @@ export class MoviesController {
     type: MovieDto,
   })
   @ApiResponse({ status: 400, description: 'Invalid input data' })
-  @ApiResponse({ status: 404, description: 'Movie not found' })
+  @ApiResponse({ status: 404, description: 'Movie with ID not found' })
   async update(
     @Param('id') id: string,
     @Body() updateMovieDto: UpdateMovieDto,
@@ -100,7 +100,7 @@ export class MoviesController {
     description: 'Movie soft deleted',
     type: MovieDto,
   })
-  @ApiResponse({ status: 404, description: 'Movie not found' })
+  @ApiResponse({ status: 404, description: 'Movie with ID not found' })
   async softDelete(@Param('id') id: string): Promise<MovieDto> {
     return this.moviesService.softDelete(id);
   }
@@ -114,7 +114,7 @@ export class MoviesController {
     description: 'Movie permanently deleted',
     type: MovieDto,
   })
-  @ApiResponse({ status: 404, description: 'Movie not found' })
+  @ApiResponse({ status: 404, description: 'Movie with ID not found' })
   async hardDelete(@Param('id') id: string): Promise<MovieDto> {
     return this.moviesService.hardDelete(id);
   }
