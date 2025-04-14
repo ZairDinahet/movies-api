@@ -12,9 +12,11 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserDto> {
-    const existingUser = await this.findByEmail(createUserDto.email);
+    const existingUser = await this.findAll({
+      email: createUserDto.email,
+    });
 
-    if (existingUser) {
+    if (existingUser && existingUser.length > 0) {
       throw new ConflictException('Email already exists');
     }
 
