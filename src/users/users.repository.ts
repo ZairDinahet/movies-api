@@ -14,14 +14,10 @@ export class UsersRepository {
     });
   }
 
-  async findAll(params: {
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<User[]> {
-    const { where, orderBy } = params;
+  async findAll(params: { where?: Prisma.UserWhereInput }): Promise<User[]> {
+    const { where } = params;
     return this.prisma.user.findMany({
       where,
-      orderBy,
     });
   }
 
