@@ -1,8 +1,18 @@
-import { Catch, ArgumentsHost, Logger } from '@nestjs/common';
+import {
+  Catch,
+  ArgumentsHost,
+  Logger,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { HttpException, HttpStatus } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+type ExceptionResponse = {
+  message?: string | string[];
+  error?: string;
+  [key: string]: any;
+};
 @Catch()
 export class AllExceptionsFilter extends BaseExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
@@ -14,49 +24,46 @@ export class AllExceptionsFilter extends BaseExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
-    let error: string | undefined = undefined;
+    let messages: string[] = ['Internal server error'];
+    let errorStack: string | undefined;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
-      const res = exception.getResponse();
-      message =
-        typeof res === 'string'
-          ? res
-          : typeof res === 'object' &&
-              'message' in res &&
-              typeof res.message === 'string'
-            ? res.message
-            : exception.message;
-    }
+      const exceptionResponse = exception.getResponse();
 
-    if (exception instanceof Error) {
-      error = exception.stack;
+      if (typeof exceptionResponse === 'string') {
+        messages = [exceptionResponse];
+      } else {
+        const responseObj = exceptionResponse as ExceptionResponse;
+
+        if (Array.isArray(responseObj.message)) {
+          messages = responseObj.message;
+        } else if (typeof responseObj.message === 'string') {
+          messages = [responseObj.message];
+        } else if (typeof responseObj.error === 'string') {
+          messages = [responseObj.error];
+        } else {
+          messages = [exception.message || 'Unexpected error'];
+        }
+      }
+    } else if (exception instanceof Error) {
+      messages = [exception.message];
+      errorStack = exception.stack;
     }
 
     this.logger.error(
-      `[${request.method}] ${request.url} -> ${status} | ${message}`,
-      this.isDev && error ? error : undefined,
+      `[${request.method}] ${request.url} -> ${status} | ${messages.join(', ')}`,
+      this.isDev && errorStack ? errorStack : undefined,
     );
 
-    const jsonResponse: {
-      statusCode: number;
-      timestamp: string;
-      path: string;
-      method: string;
-      message: string;
-      stack?: string;
-    } = {
+    const jsonResponse = {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
       method: request.method,
-      message,
+      message: messages.length === 1 ? messages[0] : messages,
+      ...(this.isDev && errorStack ? { stack: errorStack } : {}),
     };
-
-    if (this.isDev && error) {
-      jsonResponse.stack = error;
-    }
 
     response.status(status).json(jsonResponse);
   }
