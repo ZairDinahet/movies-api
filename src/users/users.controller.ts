@@ -78,6 +78,7 @@ export class UsersController {
     type: UserDto,
   })
   @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 404, description: 'User with ID not found' })
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
@@ -86,6 +87,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Soft delete a user by ID (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the user to delete' })
   @ApiResponse({ status: 200, description: 'User soft-deleted successfully' })
+  @ApiResponse({ status: 404, description: 'User with ID not found' })
   @Delete(':id/soft')
   async softDelete(@Param('id') id: string) {
     return this.usersService.softDelete(id);
@@ -94,6 +96,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Hard delete a user (permanent) (ADMIN only)' })
   @ApiParam({ name: 'id', description: 'ID of the user to delete' })
   @ApiResponse({ status: 200, description: 'User hard-deleted successfully' })
+  @ApiResponse({ status: 404, description: 'User with ID not found' })
   @Delete(':id/hard')
   async hardDelete(@Param('id') id: string) {
     return this.usersService.hardDelete(id);
