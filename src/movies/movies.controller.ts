@@ -22,6 +22,7 @@ import {
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { ADMIN, USER } from 'src/common/constants';
+import { SyncResultDto } from './dto/sync-result.dto';
 
 @ApiTags('Movies')
 @Controller('movies')
@@ -48,6 +49,18 @@ export class MoviesController {
   @ApiResponse({ status: 200, description: 'List of movies', type: [MovieDto] })
   async findAll(): Promise<MovieDto[] | null> {
     return this.moviesService.findAll();
+  }
+
+  @Get('sync-swapi')
+  @Roles(ADMIN)
+  @ApiOperation({ summary: 'Sync movies from SWAPI (only new ones)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Synchronization complete',
+    type: SyncResultDto,
+  })
+  async syncFromSwapi(): Promise<SyncResultDto> {
+    return this.moviesService.syncFromSwapi();
   }
 
   @Get(':id')
