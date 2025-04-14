@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   Matches,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ export class CreateUserDto {
   @ApiProperty({ minLength: 6 })
   @IsString()
   @MinLength(6)
+  @MaxLength(50)
   @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/, {
     message: 'Password must be alphanumeric (letters and numbers).',
   })
