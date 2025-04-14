@@ -9,7 +9,12 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Response, Request } from 'express';
 import { UserDto } from 'src/users/dto/user.dto';
 import { LoginDto } from './dto/login.dto';
@@ -47,6 +52,7 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(200)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'User logout' })
   @ApiResponse({ status: 200, description: 'Logout successful' })
   logout(@Res({ passthrough: true }) res: Response) {
