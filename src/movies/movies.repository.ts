@@ -17,7 +17,7 @@ export class MoviesRepository {
   }
 
   async findOne(id: string): Promise<Movie | null> {
-    return this.prisma.movie.findFirst({
+    return this.prisma.movie.findUnique({
       where: {
         id,
         deletedAt: null,
