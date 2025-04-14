@@ -11,8 +11,8 @@ async function bootstrap() {
   app.use(cookieParser());
 
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
+    .setTitle('Star Wars Movie API')
+    .setDescription('API for managing users and movies using NestJS')
     .setVersion('1.0')
     .addBearerAuth({
       type: 'http',
@@ -22,12 +22,15 @@ async function bootstrap() {
       name: 'Authorization',
       description: 'Enter JWT token',
     })
-    .addSecurityRequirements('bearer')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, documentFactory);
+  SwaggerModule.setup('api/docs', app, documentFactory);
 
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  );
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
