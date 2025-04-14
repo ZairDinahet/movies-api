@@ -14,11 +14,6 @@ export class MoviesService {
     return plainToInstance(MovieDto, movies);
   }
 
-  async findByTitle(title: string): Promise<MovieDto | null> {
-    const movie = await this.moviesRepository.findByTitle(title);
-    return movie ? plainToInstance(MovieDto, movie) : null;
-  }
-
   async findOne(id: string): Promise<MovieDto | null> {
     const movie = await this.moviesRepository.findOne(id);
     return movie ? plainToInstance(MovieDto, movie) : null;
@@ -34,8 +29,8 @@ export class MoviesService {
     return plainToInstance(MovieDto, movie);
   }
 
-  async remove(id: string): Promise<MovieDto> {
-    const movie = await this.moviesRepository.remove(id);
+  async softDelete(id: string): Promise<MovieDto> {
+    const movie = await this.moviesRepository.softDelete(id);
     return plainToInstance(MovieDto, movie);
   }
 
