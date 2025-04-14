@@ -28,7 +28,7 @@ export class UsersService {
   }
 
   async findAll(filterDto: GetUsersFilterDto): Promise<UserDto[]> {
-    const { email, orderByCreatedAt } = filterDto;
+    const { email } = filterDto;
 
     const where: Prisma.UserWhereInput = {
       deletedAt: null,
@@ -38,12 +38,7 @@ export class UsersService {
       where.email = email;
     }
 
-    const orderBy: Prisma.UserOrderByWithRelationInput | undefined =
-      orderByCreatedAt
-        ? { createdAt: orderByCreatedAt.toLowerCase() as 'asc' | 'desc' }
-        : undefined;
-
-    const users = await this.usersRepository.findAll({ where, orderBy });
+    const users = await this.usersRepository.findAll({ where });
     const result = plainToInstance(UserDto, users, {
       excludeExtraneousValues: true,
     });
