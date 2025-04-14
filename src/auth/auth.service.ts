@@ -1,9 +1,7 @@
 import {
-  ConflictException,
   UnauthorizedException,
   InternalServerErrorException,
   Injectable,
-  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -26,82 +24,51 @@ export class AuthService {
   ) {}
 
   async validateUser(loginInfo: LoginDto): Promise<User> {
-    try {
-      const { email, password } = loginInfo;
-
-      const user = await this.usersService.findByEmail(email);
-      if (!user) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
-
-      const isPasswordValid = await comparePasswords(password, user.password);
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
-
-      return user;
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Error validating user');
+    const { email, password } = loginInfo;
+    const user = await this.usersService.findByEmail(email);
+    const isPasswordValid = await comparePasswords(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
     }
+
+    return user;
   }
 
   async login(loginInfo: LoginDto): Promise<TokenDto> {
-    try {
-      const user = await this.validateUser(loginInfo);
-      const payload: JwtPayload = {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      };
+    const user = await this.validateUser(loginInfo);
+    const payload: JwtPayload = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
 
-      const [accessToken, refreshToken] = await Promise.all([
-        this.generateAccessToken(payload),
-        this.generateRefreshToken(payload),
-      ]);
-
-      return { accessToken, refreshToken };
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Login failed');
-    }
+    const [accessToken, refreshToken] = await Promise.all([
+      this.generateAccessToken(payload),
+      this.generateRefreshToken(payload),
+    ]);
+    return { accessToken, refreshToken };
   }
 
   async register(registerDto: RegisterDto): Promise<UserDto> {
-    try {
-      const { password, ...rest } = registerDto;
+    const { password, ...rest } = registerDto;
 
-      const hashedPassword = await hashPassword(password);
-      const createdUser = await this.usersService.create({
-        password: hashedPassword,
-        ...rest,
-      });
+    const hashedPassword = await hashPassword(password);
+    const createdUser = await this.usersService.create({
+      password: hashedPassword,
+      ...rest,
+    });
 
-      return plainToInstance(UserDto, createdUser, {
-        excludeExtraneousValues: true,
-      });
-    } catch (error) {
-      if (error instanceof ConflictException) {
-        throw error;
-      }
-      throw new BadRequestException('Registration failed');
-    }
+    return plainToInstance(UserDto, createdUser, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async refreshTokens(user: JwtPayload): Promise<string> {
-    try {
-      return await this.generateAccessToken({
-        id: user.id,
-        email: user.email,
-        role: user.role,
-      });
-    } catch {
-      throw new InternalServerErrorException('Failed to refresh token');
-    }
+    return await this.generateAccessToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
   }
 
   private async generateAccessToken(payload: JwtPayload): Promise<string> {
