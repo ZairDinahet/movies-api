@@ -9,6 +9,7 @@ import { plainToInstance } from 'class-transformer';
 import { User } from '@prisma/client';
 import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { TokenDto } from './dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,7 @@ export class AuthService {
     return user;
   }
 
-  async login(loginInfo: LoginDto) {
+  async login(loginInfo: LoginDto): Promise<TokenDto> {
     const user = await this.validateUser(loginInfo);
     const payload = {
       id: user.id,
@@ -72,7 +73,6 @@ export class AuthService {
 
   private async generateAccessToken(payload: JwtPayload): Promise<string> {
     return this.jwtService.signAsync(payload, {
-      secret: this.configService.get('JWT_SECRET'),
       expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
     });
   }
