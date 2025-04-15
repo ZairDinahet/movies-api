@@ -74,21 +74,38 @@ export class AuthService {
 
   private async generateAccessToken(payload: JwtPayload): Promise<string> {
     try {
+      console.log(
+        'ACCES-TOKEN EXPIRE',
+        this.configService.get('JWT_EXPIRATION_TIME'),
+      );
+      console.log('ACCES-TOKEN', this.configService.get('JWT_SECRET'));
+
       return await this.jwtService.signAsync(payload, {
         expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
       });
-    } catch {
+    } catch (e) {
+      console.error('Error generating access token:', e);
       throw new InternalServerErrorException('Failed to generate access token');
     }
   }
 
   private async generateRefreshToken(payload: JwtPayload): Promise<string> {
     try {
+      console.log(
+        'REFRESH-TOKEN EXPIRE',
+        this.configService.get('JWT_REFRESH_EXPIRATION_TIME'),
+      );
+      console.log(
+        'REFRESH-TOKEN',
+        this.configService.get('JWT_REFRESH_SECRET'),
+      );
+
       return await this.jwtService.signAsync(payload, {
         secret: this.configService.get('JWT_REFRESH_SECRET'),
         expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION_TIME'),
       });
-    } catch {
+    } catch (e) {
+      console.error('Error generating refresh token:', e);
       throw new InternalServerErrorException(
         'Failed to generate refresh token',
       );
