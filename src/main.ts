@@ -22,7 +22,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Star Wars Movie API')
-    .setDescription('API for managing users and movies using NestJS')
+    .setDescription(
+      'API to manage users and movies using NestJS by **Zair Dinahet** 👨🏻‍💻',
+    )
     .setVersion('1.0')
     .addBearerAuth({
       type: 'http',
