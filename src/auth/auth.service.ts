@@ -1,7 +1,8 @@
 import {
   UnauthorizedException,
-  InternalServerErrorException,
   Injectable,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -74,40 +75,35 @@ export class AuthService {
 
   private async generateAccessToken(payload: JwtPayload): Promise<string> {
     try {
-      console.log(
-        'ACCES-TOKEN EXPIRE',
-        this.configService.get('JWT_EXPIRATION_TIME'),
-      );
-      console.log('ACCES-TOKEN', this.configService.get('JWT_SECRET'));
-
       return await this.jwtService.signAsync(payload, {
         expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
       });
-    } catch (e) {
-      console.error('Error generating access token:', e);
-      throw new InternalServerErrorException('Failed to generate access token');
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e);
+      throw new HttpException(
+        {
+          message: 'Failed to generate access token',
+          error,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
   private async generateRefreshToken(payload: JwtPayload): Promise<string> {
     try {
-      console.log(
-        'REFRESH-TOKEN EXPIRE',
-        this.configService.get('JWT_REFRESH_EXPIRATION_TIME'),
-      );
-      console.log(
-        'REFRESH-TOKEN',
-        this.configService.get('JWT_REFRESH_SECRET'),
-      );
-
       return await this.jwtService.signAsync(payload, {
         secret: this.configService.get('JWT_REFRESH_SECRET'),
         expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION_TIME'),
       });
-    } catch (e) {
-      console.error('Error generating refresh token:', e);
-      throw new InternalServerErrorException(
-        'Failed to generate refresh token',
+    } catch (e: unknown) {
+      const error = e instanceof Error ? e.message : String(e);
+      throw new HttpException(
+        {
+          message: 'Failed to generate refresh token',
+          error,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
